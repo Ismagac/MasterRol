@@ -1,0 +1,32 @@
+import { useState, useEffect } from "preact/hooks";
+import socket from "../scripts/socket";
+
+export default function GameRoom() {
+  const [messages, setMessages] = useState<string[]>([]);
+
+  useEffect(() => {
+    socket.on("message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.off("message");
+    };
+  }, []);
+
+  const sendMessage = () => {
+    socket.emit("message", "¡Hola desde el frontend!");
+  };
+
+  return (
+    <div>
+      <h2>Chat en Tiempo Real</h2>
+      <ul>
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+      </ul>
+      <button onClick={sendMessage}>Enviar Mensaje</button>
+    </div>
+  );
+}
