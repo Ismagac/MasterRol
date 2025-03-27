@@ -4,22 +4,42 @@ import { useGame } from '../contexts/GameContext';
 import { PlayerData } from '../types';
 
 const PlayerDashboard: React.FC = () => {
-  const { gameState, currentPlayerId, performPlayerAction } = useGame();
+  const { gameState, currentPlayerId, performPlayerAction, currentRole, isJoining } = useGame();
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
   const [selectedAction, setSelectedAction] = useState('');
   const [actionTarget, setActionTarget] = useState('');
+  const [validationAttempts, setValidationAttempts] = useState(0);
   
   const navigate = useNavigate();
 
-  // Obtener los datos del jugador actual
+  // Obtener los datos del jugador actual con validación mejorada
   useEffect(() => {
-    if (!currentPlayerId || !gameState.players[currentPlayerId]) {
-      navigate('/');
-      return;
-    }
+    const validationTimer = setTimeout(() => {
+      console.log('🔍 Validando si es jugador:', {
+        currentRole,
+        isPlayer: gameState.players[currentPlayerId || ''] !== undefined,
+        currentId: currentPlayerId,
+        isJoining
+      });
+
+      // Solo redirigir después de varios intentos y si no está en proceso de unirse
+      if (!isJoining && currentRole === 'player' && 
+          (!currentPlayerId || !gameState.players[currentPlayerId]) && 
+          validationAttempts > 3) {
+        console.log('❌ No autorizado como jugador, redirigiendo');
+        navigate('/');
+        return;
+      }
+      
+      if (currentPlayerId && gameState.players[currentPlayerId]) {
+        setPlayerData(gameState.players[currentPlayerId]);
+      }
+      
+      setValidationAttempts(prev => prev + 1);
+    }, 1000);
     
-    setPlayerData(gameState.players[currentPlayerId]);
-  }, [gameState, currentPlayerId, navigate]);
+    return () => clearTimeout(validationTimer);
+  }, [gameState, currentPlayerId, navigate, validationAttempts, currentRole, isJoining]);
 
   // Ejecutar una acción del jugador
   const handleAction = (e: React.FormEvent) => {
@@ -36,9 +56,9 @@ const PlayerDashboard: React.FC = () => {
     setActionTarget('');
   };
 
-  // Si no hay datos del jugador, mostrar cargando
-  if (!playerData) {
-    return <div>Cargando datos del jugador...</div>;
+  // Si está cargando, mostrar un mensaje
+  if (isJoining || !playerData) {
+    return <div className="loading">Cargando datos del jugador...</div>;
   }
 
   return (

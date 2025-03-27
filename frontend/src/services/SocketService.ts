@@ -12,6 +12,19 @@ class SocketService {
     if (!this.socket) {
       this.socket = io(SERVER_URL);
       console.log('🔌 Conectando al servidor...');
+      
+      // Añadir logs para eventos importantes
+      this.socket.on('connect', () => {
+        console.log('✅ Conectado al servidor con ID:', this.socket?.id);
+      });
+      
+      this.socket.on('connect_error', (error) => {
+        console.error('❌ Error de conexión:', error);
+      });
+      
+      this.socket.on('disconnect', (reason) => {
+        console.log('❌ Desconectado del servidor:', reason);
+      });
     }
     return this.socket;
   }
@@ -27,9 +40,12 @@ class SocketService {
 
   // Unirse al juego como master o jugador
   joinGame(role: Role, playerData?: PlayerData): void {
-    if (!this.socket) return;
+    if (!this.socket) {
+      console.error('❌ No hay conexión al intentar unirse al juego');
+      return;
+    }
     this.socket.emit('joinGame', { role, playerData });
-    console.log(`🎮 Uniendo al juego como ${role}`);
+    console.log(`🎮 Enviando solicitud para unirse como ${role}`, playerData);
   }
 
   // Enviar acción del master
