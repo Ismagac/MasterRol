@@ -1,3 +1,35 @@
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0d1117;
+  color: #e6edf3;
+  line-height: 1.6;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+}
+
+.game-title {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  color: #58a6ff;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +71,236 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Formularios y controles */
+button {
+  background-color: #238636;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #2ea043;
+}
+
+button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
+
+button.back-button {
+  background-color: #21262d;
+}
+
+button.back-button:hover {
+  background-color: #30363d;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-size: 1rem;
+}
+
+input[type="range"] {
+  height: 5px;
+  appearance: none;
+  background: #30363d;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: #58a6ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Componentes específicos */
+.join-game-container {
+  background-color: #161b22;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.role-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.role-button {
+  padding: 2rem;
+  font-size: 1.5rem;
+  width: 200px;
+}
+
+.role-button.master {
+  background-color: #8250df;
+}
+
+.role-button.master:hover {
+  background-color: #a371f7;
+}
+
+.role-button.player {
+  background-color: #1f6feb;
+}
+
+.role-button.player:hover {
+  background-color: #388bfd;
+}
+
+.stats-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #21262d;
+  border-radius: 6px;
+}
+
+.stat-group {
+  margin-bottom: 0.5rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Dashboard de Master */
+.master-dashboard {
+  background-color: #161b22;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.actions-section {
+  margin-top: 2rem;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.custom-action-form {
+  background-color: #21262d;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+/* Dashboard de Jugador */
+.player-dashboard {
+  background-color: #161b22;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.character-sheet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .character-sheet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.character-info {
+  background-color: #21262d;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.game-log {
+  margin-top: 2rem;
+  background-color: #21262d;
+  padding: 1rem;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #21262d;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Tarjeta de Jugador */
+.player-card {
+  background-color: #21262d;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.stats-summary {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+.master-controls {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.master-controls button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.attacks ul {
+  list-style-position: inside;
+  margin-top: 0.25rem;
 }
