@@ -10,6 +10,7 @@ interface GameContextType {
   joinGame: (role: Role, playerData?: PlayerData) => void;
   performMasterAction: (action: any) => void;
   performPlayerAction: (action: any) => void;
+  isJoining: boolean;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -21,6 +22,7 @@ export const GameProvider: React.FC<{children: React.ReactNode}> = ({ children }
   });
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
   const [currentRole, setCurrentRole] = useState<Role | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
   
   const navigate = useNavigate();
 
@@ -32,6 +34,16 @@ export const GameProvider: React.FC<{children: React.ReactNode}> = ({ children }
     socket.on('updateGameState', (state: GameState) => {
       console.log('📊 Estado del juego actualizado:', state);
       setGameState(state);
+      
+      // Si estamos esperando para unirnos, comprobamos si hemos sido añadidos correctamente
+      if (isJoining && currentRole && socket.id) {
+        if ((currentRole === 'master' && state.master === socket.id) || 
+            (currentRole === 'player' && state.players[socket.id])) {
+          console.log('✅ Unión confirmada por el servidor, navegando a:', currentRole);
+          setIsJoining(false);
+          navigate(currentRole === 'master' ? '/master' : '/player');
+        }
+      }
     });
     
     // Escuchar acciones del master
@@ -43,21 +55,30 @@ export const GameProvider: React.FC<{children: React.ReactNode}> = ({ children }
     socket.on('error', (error: {message: string}) => {
       console.error('❌ Error:', error.message);
       alert(error.message);
+      setIsJoining(false);
     });
 
     // Guardar el ID del jugador
     if (socket.id) {
+      console.log('🔑 ID del socket asignado:', socket.id);
       setCurrentPlayerId(socket.id);
+    } else {
+      socket.on('connect', () => {
+        console.log('🔑 ID del socket asignado tras conexión:', socket.id);
+        setCurrentPlayerId(socket.id || null);
+      });
     }
     
     return () => {
       SocketService.disconnect();
     };
-  }, []);
+  }, [isJoining, currentRole, navigate]);
 
   // Función para unirse al juego
   const joinGame = (role: Role, playerData?: PlayerData) => {
+    console.log('🎮 Intentando unirse como:', role);
     setCurrentRole(role);
+    setIsJoining(true);
     
     // Si es jugador, crear datos del personaje si no se proporcionan
     if (role === 'player' && !playerData) {
@@ -77,8 +98,7 @@ export const GameProvider: React.FC<{children: React.ReactNode}> = ({ children }
     // Enviar solicitud para unirse
     SocketService.joinGame(role, playerData);
     
-    // Navegar a la vista correspondiente
-    navigate(role === 'master' ? '/master' : '/player');
+    // La navegación ahora ocurre después de recibir confirmación del servidor
   };
 
   // Enviar acción del master
@@ -99,7 +119,8 @@ export const GameProvider: React.FC<{children: React.ReactNode}> = ({ children }
         currentRole,
         joinGame,
         performMasterAction,
-        performPlayerAction
+        performPlayerAction,
+        isJoining
       }}
     >
       {children}
